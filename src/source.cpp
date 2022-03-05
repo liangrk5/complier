@@ -37,15 +37,39 @@ void scanDFA(string filename);
 // 初始化字类型对应表
 void initMAP();
 
+void writetoTXT();
 int main()
 {
     initMAP();
-    scanDFA("1.c");
-    for(int i = 0;i < wordlist.size();i++)
+    string name;
+    cout << "请输入需要分析的程序:" ;
+    cin >> name;
+    scanDFA(name);
+    if(errorline.size())
     {
-        cout << wordlist[i].first << " " << wordlist[i].second << endl;
+        cout << "词法存在错误!,错误行数为:" << endl;
+        for(int i = 0;i < errorline.size();i++)
+        {
+            cout << errorline[i] <<" ";
+        }
+        cout << endl;
+    }
+    else
+    {
+        writetoTXT();
     }
     return 0;
+}
+
+void writetoTXT()
+{
+    fstream file;
+    file.open("tokens.txt",ios::out);
+    for(int i = 0;i < wordlist.size();i++)
+    {
+        file << "< " << wordlist[i].first << " , " << wordlist[i].second << " >" << endl;
+    }
+
 }
 
 bool isLetter(char ch)
@@ -132,7 +156,7 @@ void scanDFA(string filename)
     char buff;
     int state = 0;
     string word = "";
-    int line = 0;
+    int line = 1;
     do{
         switch(state)
         {
@@ -375,6 +399,11 @@ void scanDFA(string filename)
                     word += buff;
                     break;
                 }
+                else if(isLetter(buff)||buff == '_')
+                {
+                    state = 100;
+                    break;
+                }
                 else
                 {
                     addWordBack(file, word);
@@ -521,6 +550,10 @@ void scanDFA(string filename)
                 }
                 else
                 {
+                    if(buff == '\n')
+                    {
+                        line++;
+                    }
                     state = 30;
                     break;
                 }
@@ -535,6 +568,10 @@ void scanDFA(string filename)
                 }
                 else
                 {
+                    if(buff == '\n')
+                    {
+                        line++;
+                    }
                     state = 30;
                     break;
                 }
@@ -545,6 +582,8 @@ void scanDFA(string filename)
                 if(buff == '\n')
                 {
                     state = 0;
+                    line++;
+                    word = "";
                     break;
                 }
                 else
@@ -672,6 +711,7 @@ void scanDFA(string filename)
             {
                 file.seekg(-1, ios::cur);
                 errorline.push_back(line);
+                word = "";
                 state = 0;
                 break;
             }
