@@ -1,0 +1,9 @@
+main()
+{
+    int a, b;
+    a = 1;
+    b = a * 2 + 3;
+    b = b / 2;
+    write(a,b);
+    return;
+}

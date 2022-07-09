@@ -1,0 +1,12 @@
+test()
+{
+    int a;
+    a = 2;
+    write(a);
+    return;
+}
+main()
+{
+    test();
+    return;
+}
